@@ -1,11 +1,9 @@
-import { UserButton } from "@clerk/nextjs";
 import Image from "next/image";
 
 export default function Home() {
   return (
-    <main>
-      <UserButton />
+    <div>
       <p>Authenticated route</p>
-    </main>
+    </div>
   );
 }
