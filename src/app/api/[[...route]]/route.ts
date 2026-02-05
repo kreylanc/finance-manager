@@ -8,6 +8,16 @@ export const runtime = "edge";
 
 const app = new Hono().basePath("/api");
 
+// Implementing authentication using clerk middleware
+app.use(
+  "*",
+  // passing env keys here to fix the issue of clerk throwing publishable key missing error
+  clerkMiddleware({
+    publishableKey: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY!,
+    secretKey: process.env.CLERK_SECRET_KEY!,
+  }),
+);
+
 // handle HTTPException error
 app.onError((err, c) => {
   if (err instanceof HTTPException) {
@@ -16,9 +26,6 @@ app.onError((err, c) => {
 
   return c.json({ error: "Internal error" }, 500);
 });
-
-// Implementing authentication using clerk middleware
-app.use("*", clerkMiddleware());
 
 const routes = app.route("/accounts", accounts);
 
