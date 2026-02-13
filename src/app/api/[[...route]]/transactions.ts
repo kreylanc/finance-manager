@@ -113,6 +113,32 @@ const app = new Hono()
     },
   )
   .post(
+    "/bulk-create",
+    zValidator("json", z.array(insertTransactionsSchema.omit({ id: true }))),
+    async (c) => {
+      // get auth details from Clerk
+      const auth = getAuth(c);
+      const values = c.req.valid("json");
+
+      if (!auth?.userId) {
+        // return response with an error code to ensure typesafety in client side
+        return c.json({ error: "Unauthorized" }, 401);
+      }
+
+      const data = await db
+        .insert(transactions)
+        .values(
+          values.map((value) => ({
+            id: createId(),
+            ...value,
+          })),
+        )
+        .returning();
+
+      return c.json({ data });
+    },
+  )
+  .post(
     "/",
     zValidator("json", insertTransactionsSchema.omit({ id: true })),
     async (c) => {
