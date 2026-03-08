@@ -5,29 +5,41 @@ import NavButton from "./nav-button";
 import { useMedia } from "react-use";
 import { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
-import { Menu } from "lucide-react";
+import {
+  ArrowLeftRight,
+  BarChart3,
+  LayoutGrid,
+  Menu,
+  Settings,
+  Wallet,
+} from "lucide-react";
 import { Button } from "./ui/button";
 
 const routes = [
   {
     href: "/",
     label: "Overview",
+    icon: <BarChart3 />,
   },
   {
     href: "/transactions",
     label: "Transactions",
+    icon: <ArrowLeftRight />,
   },
   {
     href: "/accounts",
     label: "Accounts",
+    icon: <Wallet />,
   },
   {
     href: "/categories",
     label: "Categories",
+    icon: <LayoutGrid />,
   },
   {
     href: "/settings",
     label: "Settings",
+    icon: <Settings />,
   },
 ];
 
@@ -67,6 +79,7 @@ const Navigation = () => {
                 onClick={() => onClick(route.href)}
                 className="justify-start w-full"
               >
+                {route.icon}
                 {route.label}
               </Button>
             ))}
@@ -82,6 +95,7 @@ const Navigation = () => {
           key={nav.href}
           href={nav.href}
           label={nav.label}
+          icon={nav.icon}
           isActive={pathname === nav.href}
         />
       ))}

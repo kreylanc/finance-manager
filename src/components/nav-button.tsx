@@ -6,19 +6,23 @@ type Props = {
   href: string;
   label: string;
   isActive?: boolean;
+  icon: React.ReactNode;
 };
 
-const NavButton = ({ href, label, isActive }: Props) => {
+const NavButton = ({ href, label, isActive, icon }: Props) => {
   return (
     <Button
       asChild
       variant="outline"
       className={cn(
         "w-full text-primary-foreground outline-none border-none focus-visible:ring-offset-0 focus-visible:ring-1 focus-visible:ring-primary-foreground hover:bg-primary-foreground/20 hover:text-primary-foreground focus:bg-primary-foreground/20 transition",
-        isActive ? "bg-white/10 text-primary-foreground" : "bg-transparent"
+        isActive ? "bg-white/10 text-primary-foreground" : "bg-transparent",
       )}
     >
-      <Link href={href}>{label}</Link>
+      <Link href={href}>
+        {icon}
+        {label}
+      </Link>
     </Button>
   );
 };
