@@ -37,10 +37,10 @@ export const transactions = pgTable("transactions", {
   id: text("id").primaryKey(),
   amount: integer("amount").notNull(),
   payee: text("payee").notNull(),
-  location: text("location").notNull(),
+  name: text("name").notNull(),
   notes: text("notes"),
   date: timestamp("date", { mode: "date" }).notNull(),
-  dateBS: date("dateBS", { mode: "date" }),
+  dateBS: text("dateBS").notNull(),
   accountId: text("account_id")
     .references(() => accounts.id, {
       onDelete: "cascade",
@@ -64,5 +64,5 @@ export const transactionsRelations = relations(transactions, ({ one }) => ({
 }));
 
 export const insertTransactionsSchema = createInsertSchema(transactions, {
-  date: z.coerce.date(),
+  date: z.coerce.date<Date>(),
 });

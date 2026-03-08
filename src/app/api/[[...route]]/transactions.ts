@@ -50,8 +50,9 @@ const app = new Hono()
           id: transactions.id,
           payee: transactions.payee,
           amount: transactions.amount,
-          location: transactions.location,
+          name: transactions.name,
           date: transactions.date,
+          dateBS: transactions.dateBS,
           categories: categories.name,
           categoryId: transactions.categoryId,
           account: accounts.name,
@@ -96,10 +97,12 @@ const app = new Hono()
           id: transactions.id,
           payee: transactions.payee,
           amount: transactions.amount,
-          location: transactions.location,
+          name: transactions.name,
           date: transactions.date,
+          dateBS: transactions.dateBS,
           categoryId: transactions.categoryId,
           accountId: transactions.accountId,
+          notes: transactions.notes,
         })
         .from(transactions)
         .innerJoin(accounts, eq(transactions.accountId, accounts.id))
@@ -187,7 +190,7 @@ const app = new Hono()
             .innerJoin(accounts, eq(transactions.accountId, accounts.id))
             .where(
               and(
-                inArray(transactions.accountId, values.ids),
+                inArray(transactions.id, values.ids),
                 eq(accounts.userId, auth.userId),
               ),
             ),
@@ -242,25 +245,23 @@ const app = new Hono()
             .from(transactions)
             .innerJoin(accounts, eq(transactions.accountId, accounts.id))
             .where(
-              and(
-                eq(transactions.accountId, id),
-                eq(accounts.userId, auth.userId),
-              ),
+              and(eq(transactions.id, id), eq(accounts.userId, auth.userId)),
             ),
         );
         const data = await db
           .with(transactionToDelete)
           .delete(transactions) // delete when userId matches with logged in user and transactions id with passed id
           .where(
-            and(
-              eq(transactions.id, sql`select id from ${transactionToDelete}`),
+            inArray(
+              transactions.id,
+              sql`(select id from ${transactionToDelete})`,
             ),
           )
           .returning({ id: transactions.id });
 
         return c.json({ data });
       } catch (error) {
-        return c.json({ error: "Failed to delete" }, 500);
+        return c.json({ error: "Failed to delete transaction!" }, 500);
       }
     },
   )
@@ -291,10 +292,7 @@ const app = new Hono()
           .from(transactions)
           .innerJoin(accounts, eq(transactions.accountId, accounts.id))
           .where(
-            and(
-              eq(transactions.accountId, id),
-              eq(accounts.userId, auth.userId),
-            ),
+            and(eq(transactions.id, id), eq(accounts.userId, auth.userId)),
           ),
       );
 
