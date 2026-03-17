@@ -66,7 +66,7 @@ export const columns: ColumnDef<ResponseType>[] = [
     },
   },
   {
-    accessorKey: "location",
+    accessorKey: "name",
     header: ({ column }) => {
       return (
         <Button
@@ -121,9 +121,9 @@ export const columns: ColumnDef<ResponseType>[] = [
       return (
         <Badge
           variant={amount < 0 ? "destructive" : "primary"}
-          className="px-3.5 py-2.5 text-xs font-medium"
+          className="px-3.5 w-36 py-2.5 text-xs font-medium"
         >
-          <span>{formatCurrency(amount)}</span>
+          <span className="mx-auto">{formatCurrency(amount)}</span>
         </Badge>
       );
     },
@@ -165,20 +165,6 @@ export const columns: ColumnDef<ResponseType>[] = [
           account={row.original.account}
           accountId={row.original.accountId}
         />
-      );
-    },
-  },
-  {
-    accessorKey: "payee",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Payee
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
       );
     },
   },

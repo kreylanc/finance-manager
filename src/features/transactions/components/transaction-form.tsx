@@ -4,6 +4,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import DatePicker from "@/components/date-picker";
@@ -17,15 +18,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { insertTransactionsSchema } from "/db/schema";
 import { useForm } from "react-hook-form";
 import { Trash } from "lucide-react";
-import { format, parse } from "date-fns";
-import NepaliDate, { ADtoBS } from "nepali-date-library";
+import { format } from "date-fns";
+import { ADtoBS } from "nepali-date-library";
 import { convertAmountToMilliunits } from "@/lib/utils";
 import NepaliDatePicker from "@/components/nepali-date-picker";
 
 const formSchema = z.object({
   date: z.coerce.date<Date>(),
-  payee: z.string(),
-  name: z.string(),
+  name: z.string().min(3, "Transaction name must be at least 3 characters."),
   amount: z.string(),
   accountId: z.string(),
   dateBS: z.string(),
@@ -70,14 +70,13 @@ export const TransactionForm = ({
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: defaultValues,
+    mode: "onChange",
   });
 
   // function to handle for submit
   const handleSubmit = (values: FormValues) => {
     const amount = parseFloat(values.amount); // string to float
     const amountInMilliunits = convertAmountToMilliunits(amount); // pass the float value
-
-    // console.log({ values });
 
     onSubmit({
       ...values,
@@ -145,7 +144,7 @@ export const TransactionForm = ({
         <FormField
           name="name"
           control={form.control}
-          render={({ field }) => (
+          render={({ field, fieldState }) => (
             <FormItem>
               <FormLabel>Transaction Name</FormLabel>
               <FormControl>
@@ -153,8 +152,10 @@ export const TransactionForm = ({
                   disabled={disabled}
                   placeholder="Name of the transaction or location"
                   {...field}
+                  aria-invalid={fieldState.invalid}
                 />
               </FormControl>
+              {fieldState.invalid && <FormMessage />}
             </FormItem>
           )}
         />
@@ -205,22 +206,6 @@ export const TransactionForm = ({
               <FormLabel>Amount</FormLabel>
               <FormControl>
                 <AmountInput {...field} placeholder="0.00" />
-              </FormControl>
-            </FormItem>
-          )}
-        />
-        <FormField
-          name="payee"
-          control={form.control}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Payee</FormLabel>
-              <FormControl>
-                <Input
-                  disabled={disabled}
-                  placeholder="Add a payee"
-                  {...field}
-                />
               </FormControl>
             </FormItem>
           )}

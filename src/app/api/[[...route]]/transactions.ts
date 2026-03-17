@@ -3,9 +3,9 @@ import z from "zod";
 import { zValidator } from "@hono/zod-validator";
 import { db } from "/db/drizzle";
 import { Hono } from "hono";
-import { and, desc, eq, gte, inArray, lte, sql } from "drizzle-orm";
+import { and, desc, eq, gte, inArray, lt, sql } from "drizzle-orm";
 import { createId } from "@paralleldrive/cuid2";
-import { parse, subDays } from "date-fns";
+import { addDays, parse, startOfDay, subDays } from "date-fns";
 
 import {
   transactions,
@@ -36,9 +36,12 @@ const app = new Hono()
 
       // define the start and end date to show transactions
       const startDate = from
-        ? parse(from, "yyyy-MM-dd", new Date())
-        : defaultFrom;
-      const endDate = to ? parse(to, "yyyy-MM-dd", new Date()) : defaultTo;
+        ? startOfDay(parse(from, "yyyy-MM-dd", new Date()))
+        : startOfDay(defaultFrom);
+      const endDate = to
+        ? startOfDay(parse(to, "yyyy-MM-dd", new Date()))
+        : startOfDay(defaultTo);
+      const endDateExclusive = addDays(endDate, 1);
 
       // Handle if user isnt signed in
       if (!auth?.userId) {
@@ -48,7 +51,6 @@ const app = new Hono()
       const data = await db
         .select({
           id: transactions.id,
-          payee: transactions.payee,
           amount: transactions.amount,
           name: transactions.name,
           date: transactions.date,
@@ -66,7 +68,7 @@ const app = new Hono()
             accountId ? eq(transactions.accountId, accountId) : undefined,
             eq(accounts.userId, auth.userId),
             gte(transactions.date, startDate),
-            lte(transactions.date, endDate),
+            lt(transactions.date, endDateExclusive),
           ),
         )
         .orderBy(desc(transactions.date));
@@ -95,7 +97,6 @@ const app = new Hono()
       const [data] = await db
         .select({
           id: transactions.id,
-          payee: transactions.payee,
           amount: transactions.amount,
           name: transactions.name,
           date: transactions.date,
@@ -127,18 +128,21 @@ const app = new Hono()
         // return response with an error code to ensure typesafety in client side
         return c.json({ error: "Unauthorized" }, 401);
       }
+      try {
+        const data = await db
+          .insert(transactions)
+          .values(
+            values.map((value) => ({
+              id: createId(),
+              ...value,
+            })),
+          )
+          .returning();
 
-      const data = await db
-        .insert(transactions)
-        .values(
-          values.map((value) => ({
-            id: createId(),
-            ...value,
-          })),
-        )
-        .returning();
-
-      return c.json({ data });
+        return c.json({ data });
+      } catch (error) {
+        return c.json({ error: "Failed to create" }, 500);
+      }
     },
   )
   .post(
