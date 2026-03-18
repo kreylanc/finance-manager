@@ -38,12 +38,12 @@ export const useConfirm = (
 
   const ConfirmationDialog = () => (
     <Dialog open={promise !== null}>
-      <DialogContent>
+      <DialogContent showCloseButton={false}>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{message}</DialogDescription>
         </DialogHeader>
-        <DialogFooter className="mt-2">
+        <DialogFooter className="mt-2 gap-y-1.5">
           <Button variant="destructive" onClick={handleCancel}>
             Cancel
           </Button>
