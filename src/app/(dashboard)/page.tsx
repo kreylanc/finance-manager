@@ -1,13 +1,11 @@
-"use client";
+import { DataCharts } from "@/components/data-charts";
+import { DataGrid } from "@/components/data-grid";
 
-import { useNewAccount } from "@/features/accounts/hooks/use-new-account";
-import { Button } from "@/components/ui/button";
-
-export default function Home() {
-  const { onOpen } = useNewAccount();
+export default function Dashboard() {
   return (
-    <div>
-      <Button onClick={onOpen}>Add an account</Button>
+    <div className="max-w-screen-2xl w-full mx-auto -mt-24 pb-20">
+      <DataGrid />
+      <DataCharts />
     </div>
   );
 }
