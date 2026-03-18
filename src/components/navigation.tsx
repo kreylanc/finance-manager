@@ -36,11 +36,6 @@ const routes = [
     label: "Categories",
     icon: <LayoutGrid />,
   },
-  {
-    href: "/settings",
-    label: "Settings",
-    icon: <Settings />,
-  },
 ];
 
 const Navigation = () => {
