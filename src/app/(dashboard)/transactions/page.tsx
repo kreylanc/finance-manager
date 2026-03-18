@@ -12,13 +12,14 @@ import { DataTable } from "@/components/data-table";
 
 import { columns } from "./columns";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { UploadButton } from "./upload-button";
 import { ImportCard } from "./import-card";
 import { useSelectAccount } from "@/features/accounts/hooks/use-select-account";
 import { toast } from "sonner";
 import { useBulkCreateTransactions } from "@/features/transactions/api/use-bulk-create-transactions";
 import { useSelectCategory } from "@/features/categories/hooks/use-select-category";
+import { useGetCategories } from "@/features/categories/api/use-get-categories";
 
 enum VARIANTS {
   LIST = "LIST",
@@ -40,9 +41,30 @@ export default function Transactions() {
   const newTransaction = useNewTransaction(); // hook to use the drawer sheet for creating transaction
   const bulkDeleteTransactions = useBulkDeleteTransactions(); // to bulk delete rows from table
   const bulkCreateTransactions = useBulkCreateTransactions(); // to bulk create transactions from csv import
-
   const [AccountDialog, confirmAccount] = useSelectAccount();
   const [CategoryDialog, confirmCategory] = useSelectCategory();
+
+  const [selectedTransaction, setSelectedTransaction] = useState(transactions);
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const { data: categories } = useGetCategories();
+
+  const onCategoryChange = (value: string) => {
+    if (value === "all") {
+      setSelectedTransaction(transactions);
+    } else {
+      const result = transactions.filter((item) => {
+        if (item.categoryId === value) {
+          return true;
+        }
+      });
+      setSelectedTransaction(result);
+    }
+    setSelectedCategory(value);
+  };
+
+  useEffect(() => {
+    onCategoryChange(selectedCategory);
+  }, [transactions]);
 
   // disabled delete btn if transaction query or delete is on going
   const isDisabled =
@@ -59,6 +81,7 @@ export default function Transactions() {
     setVariant(VARIANTS.LIST);
   };
 
+  // handle csv import
   const onSubmitImport = async (
     values: (typeof transactionSchema.$inferInsert)[],
   ) => {
@@ -128,7 +151,7 @@ export default function Transactions() {
           <CardContent>
             <DataTable
               columns={columns}
-              data={transactions}
+              data={selectedTransaction}
               filterKey="name"
               onDelete={(rows) => {
                 // map through the array of user selected rows and get only their ids
@@ -137,6 +160,9 @@ export default function Transactions() {
                 bulkDeleteTransactions.mutate({ ids }); // call bulk delete fn and pass the array of ids
               }}
               disabled={isDisabled}
+              categories={categories}
+              onCategoryChange={onCategoryChange}
+              selectedCategory={selectedCategory}
             />
           </CardContent>
         )}

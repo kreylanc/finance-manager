@@ -22,10 +22,17 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "./ui/button";
-import { ChevronLeft, ChevronRight, Rows, Trash2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, Trash2 } from "lucide-react";
 import React from "react";
 import { Input } from "./ui/input";
 import { useConfirm } from "/hooks/use-confirm";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -33,6 +40,12 @@ interface DataTableProps<TData, TValue> {
   filterKey: string;
   onDelete: (rows: Row<TData>[]) => void;
   disabled?: boolean;
+  categories?: {
+    id: string;
+    name: string;
+  }[];
+  onCategoryChange: (value: string) => void;
+  selectedCategory: string;
 }
 
 export function DataTable<TData, TValue>({
@@ -41,6 +54,9 @@ export function DataTable<TData, TValue>({
   filterKey,
   onDelete,
   disabled,
+  categories,
+  onCategoryChange,
+  selectedCategory,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -71,35 +87,54 @@ export function DataTable<TData, TValue>({
   return (
     <div>
       <ConfirmDialog />
-      <div className="flex items-center py-4">
+      <div className="flex flex-col md:flex-row gap-2 justify-between md:items-center py-4">
         <Input
           placeholder={`Filter ${filterKey}...`}
           value={(table.getColumn(filterKey)?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
             table.getColumn(filterKey)?.setFilterValue(event.target.value)
           }
-          className="max-w-sm"
+          className="w-full md:max-w-sm"
         />
-        {/* Delete button shown only when rows are selected */}
-        {table.getFilteredSelectedRowModel().rows.length > 0 && (
-          <Button
-            className="ml-auto text-xs border-destructive text-destructive hover:bg-destructive hover:text-primary-foreground"
-            variant="outline"
-            size="sm"
-            disabled={disabled}
-            onClick={async () => {
-              const ok = await confirm();
-              if (ok) {
-                const selectedRows = table.getFilteredSelectedRowModel().rows;
-                onDelete(selectedRows); // pass the selected rows to delete function
-                table.resetRowSelection();
-              }
-            }}
+        <div className="flex justify-end items-center gap-x-4">
+          <Select
+            defaultValue="all"
+            value={selectedCategory}
+            onValueChange={onCategoryChange}
           >
-            <Trash2 className="size-8" />
-            Delete ({table.getFilteredSelectedRowModel().rows.length})
-          </Button>
-        )}
+            <SelectTrigger className="w-full md:w-36">
+              <SelectValue placeholder="Select category" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All categories</SelectItem>
+              {categories?.map((category) => (
+                <SelectItem value={category.id} key={category.id}>
+                  {category.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {/* Delete button shown only when rows are selected */}
+          {table.getFilteredSelectedRowModel().rows.length > 0 && (
+            <Button
+              className=" text-xs border-destructive text-destructive hover:bg-destructive hover:text-primary-foreground"
+              variant="outline"
+              size="sm"
+              disabled={disabled}
+              onClick={async () => {
+                const ok = await confirm();
+                if (ok) {
+                  const selectedRows = table.getFilteredSelectedRowModel().rows;
+                  onDelete(selectedRows); // pass the selected rows to delete function
+                  table.resetRowSelection();
+                }
+              }}
+            >
+              <Trash2 className="size-8" />
+              Delete ({table.getFilteredSelectedRowModel().rows.length})
+            </Button>
+          )}
+        </div>
       </div>
       <div className="overflow-hidden rounded-md border">
         <Table>
@@ -159,8 +194,8 @@ export function DataTable<TData, TValue>({
         <Button
           variant="outline"
           size="sm"
-          onClick={() => table.previousPage}
-          disabled={!table.getCanNextPage()}
+          onClick={() => table.previousPage()}
+          disabled={!table.getCanPreviousPage()}
         >
           <ChevronLeft className="-mr-2" />
           Previous
