@@ -101,7 +101,6 @@ export const EditTransactionSheet = () => {
         amount: convertAmountFromMilliunits(
           transactionQuery.data.amount,
         ).toString(),
-        payee: transactionQuery.data.payee,
         date: transactionQuery.data.date
           ? new Date(transactionQuery.data.date)
           : new Date(),
@@ -113,7 +112,6 @@ export const EditTransactionSheet = () => {
         categoryId: "",
         accountId: "",
         amount: "",
-        payee: "",
         date: new Date(),
         dateBS: "",
         notes: "",

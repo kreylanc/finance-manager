@@ -44,8 +44,8 @@ interface DataTableProps<TData, TValue> {
     id: string;
     name: string;
   }[];
-  onCategoryChange: (value: string) => void;
-  selectedCategory: string;
+  onCategoryChange?: (value: string) => void;
+  selectedCategory?: string;
 }
 
 export function DataTable<TData, TValue>({
@@ -97,23 +97,25 @@ export function DataTable<TData, TValue>({
           className="w-full md:max-w-sm"
         />
         <div className="flex justify-end items-center gap-x-4">
-          <Select
-            defaultValue="all"
-            value={selectedCategory}
-            onValueChange={onCategoryChange}
-          >
-            <SelectTrigger className="w-full md:w-36">
-              <SelectValue placeholder="Select category" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All categories</SelectItem>
-              {categories?.map((category) => (
-                <SelectItem value={category.id} key={category.id}>
-                  {category.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          {categories && (
+            <Select
+              defaultValue="all"
+              value={selectedCategory}
+              onValueChange={onCategoryChange}
+            >
+              <SelectTrigger className="w-full md:w-36">
+                <SelectValue placeholder="Select category" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All categories</SelectItem>
+                {categories?.map((category) => (
+                  <SelectItem value={category.id} key={category.id}>
+                    {category.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
           {/* Delete button shown only when rows are selected */}
           {table.getFilteredSelectedRowModel().rows.length > 0 && (
             <Button
