@@ -22,13 +22,11 @@ export const useBulkDeleteAccounts = () => {
     onSuccess: () => {
       // refetches the account data when new account is created
       queryClient.invalidateQueries({ queryKey: ["accounts"] });
+      queryClient.invalidateQueries({ queryKey: ["summary"] });
+
       toast.success("Account(s) deleted.");
-      //   !TODO: Invalidate summary
     },
     onError: (error) => {
-      console.error("=== MUTATION ERROR ===");
-      console.error("Error:", error);
-      console.error("Error message:", error.message);
       toast.error("Failed to delete account.");
     },
   });

@@ -18,6 +18,8 @@ export const useCreateTransaction = () => {
     onSuccess: () => {
       // refetches the transaction data when new transaction is created
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["summary"] });
+
       toast.success("Transaction created.");
     },
     onError: (s) => {

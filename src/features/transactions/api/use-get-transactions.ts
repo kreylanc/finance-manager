@@ -1,7 +1,6 @@
 import { client } from "@/lib/hono";
 import { convertAmountFromMilliunits } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
-import NepaliDate from "nepali-date-library";
 import { useSearchParams } from "next/navigation";
 
 export const useGetTransactions = () => {

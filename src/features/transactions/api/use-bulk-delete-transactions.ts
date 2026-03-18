@@ -22,13 +22,11 @@ export const useBulkDeleteTransactions = () => {
     onSuccess: () => {
       // refetches the transaction data when new transaction is deleted
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["summary"] });
+
       toast.success("Transaction(s) deleted.");
-      //   !TODO: Invalidate summary
     },
     onError: (error) => {
-      console.error("=== MUTATION ERROR ===");
-      console.error("Error:", error);
-      console.error("Error message:", error.message);
       toast.error("Failed to delete transaction.");
     },
   });

@@ -24,9 +24,11 @@ export const useEditAccount = (id?: string) => {
       // refetches the account data when new account is created
       queryClient.invalidateQueries({ queryKey: ["accounts"] });
       queryClient.invalidateQueries({ queryKey: ["accounts", { id }] });
-      toast.success("Account edited.");
 
-      // !TODO Invalidate summary and transactions
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["summary"] });
+
+      toast.success("Account edited.");
     },
     onError: (err) => {
       toast.error("Failed to edit account.");

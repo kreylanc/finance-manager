@@ -20,13 +20,12 @@ export const useDeleteAccount = (id?: string) => {
       // refetches the account data when new account is created
       queryClient.invalidateQueries({ queryKey: ["accounts"] });
       queryClient.invalidateQueries({ queryKey: ["accounts", { id }] });
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["summary"] });
+
       toast.success("Account deleted.");
-      //   !TODO: Invalidate summary
     },
     onError: (error) => {
-      console.error("=== MUTATION ERROR ===");
-      console.error("Error:", error);
-      console.error("Error message:", error.message);
       toast.error("Failed to delete account.");
     },
   });

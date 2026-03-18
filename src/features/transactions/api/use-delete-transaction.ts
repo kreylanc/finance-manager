@@ -28,9 +28,9 @@ export const useDeleteTransaction = (id?: string) => {
       // refetches the transaction data when new transaction is deleted
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
       queryClient.invalidateQueries({ queryKey: ["transactions", { id }] });
-      toast.success("transaction deleted.");
+      queryClient.invalidateQueries({ queryKey: ["summary"] });
 
-      //   !TODO: Invalidate summary
+      toast.success("transaction deleted.");
     },
     onError: (error) => {
       toast.error(error.message || "Failed to delete transaction.");
