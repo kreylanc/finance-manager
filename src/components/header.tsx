@@ -3,6 +3,7 @@ import HeaderLogo from "./header-logo";
 import Navigation from "./navigation";
 import { Loader2 } from "lucide-react";
 import WelcomeMsg from "./welcome-msg";
+import { Filters } from "./filters";
 
 const Header = () => {
   return (
@@ -14,13 +15,14 @@ const Header = () => {
             <Navigation />
           </div>
           <ClerkLoaded>
-            <UserButton afterSignOutUrl="/" />
+            <UserButton />
           </ClerkLoaded>
           <ClerkLoading>
             <Loader2 className="animate-spin" />
           </ClerkLoading>
         </div>
         <WelcomeMsg />
+        <Filters />
       </div>
     </header>
   );
