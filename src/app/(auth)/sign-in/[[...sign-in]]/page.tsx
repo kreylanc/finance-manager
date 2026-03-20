@@ -1,5 +1,4 @@
 import { SignIn } from "@clerk/nextjs";
-import Image from "next/image";
 
 const SignInPage = () => {
   return (
@@ -7,8 +6,10 @@ const SignInPage = () => {
       <div className="flex items-center justify-center">
         <SignIn path="/sign-in" />
       </div>
-      <div className="hidden h-full lg:flex bg-blue-600 justify-center">
-        <Image src="/logo.svg" alt="logo" width="200" height="200" />
+      <div className="hidden h-full lg:flex bg-blue-600 justify-center items-center">
+        <h1 className="text-6xl text-primary-foreground font-bold">
+          Finance Manager
+        </h1>
       </div>
     </div>
   );

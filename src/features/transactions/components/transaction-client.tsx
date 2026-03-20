@@ -8,15 +8,14 @@ import { transactions as transactionSchema } from "/db/schema";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { DataTable } from "@/components/data-table";
+import { DataTable } from "@/components/data-table/data-table";
 
 import { Skeleton } from "@/components/ui/skeleton";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useSelectAccount } from "@/features/accounts/hooks/use-select-account";
 import { toast } from "sonner";
 import { useBulkCreateTransactions } from "@/features/transactions/api/use-bulk-create-transactions";
 import { useSelectCategory } from "@/features/categories/hooks/use-select-category";
-import { useGetCategories } from "@/features/categories/api/use-get-categories";
 import { ImportCard } from "@/app/(dashboard)/transactions/import-card";
 import { UploadButton } from "@/app/(dashboard)/transactions/upload-button";
 import { columns } from "@/app/(dashboard)/transactions/columns";
@@ -43,28 +42,6 @@ export const TransactionClient = () => {
   const bulkCreateTransactions = useBulkCreateTransactions(); // to bulk create transactions from csv import
   const [AccountDialog, confirmAccount] = useSelectAccount();
   const [CategoryDialog, confirmCategory] = useSelectCategory();
-
-  const [selectedTransaction, setSelectedTransaction] = useState(transactions);
-  const [selectedCategory, setSelectedCategory] = useState("all");
-  const { data: categories } = useGetCategories();
-
-  const onCategoryChange = (value: string) => {
-    if (value === "all") {
-      setSelectedTransaction(transactions);
-    } else {
-      const result = transactions.filter((item) => {
-        if (item.categoryId === value) {
-          return true;
-        }
-      });
-      setSelectedTransaction(result);
-    }
-    setSelectedCategory(value);
-  };
-
-  useEffect(() => {
-    onCategoryChange(selectedCategory);
-  }, [transactions]);
 
   // disabled delete btn if transaction query or delete is on going
   const isDisabled =
@@ -144,14 +121,19 @@ export const TransactionClient = () => {
         </CardHeader>
         {transactionQuery.isLoading ? (
           <CardContent className="mt-4">
-            <Skeleton className="h-10 max-w-sm" />
+            <div className="flex flex-col md:flex-row gap-2">
+              <Skeleton className="h-8 w-full md:max-w-52" />
+              <Skeleton className="h-8 w-full md:w-28" />
+
+              <Skeleton className="ml-auto h-8 w-full md:w-28" />
+            </div>
             <Skeleton className="h-40 w-full mt-4" />
           </CardContent>
         ) : (
           <CardContent>
             <DataTable
               columns={columns}
-              data={selectedTransaction}
+              data={transactions}
               filterKey="name"
               onDelete={(rows) => {
                 // map through the array of user selected rows and get only their ids
@@ -160,9 +142,6 @@ export const TransactionClient = () => {
                 bulkDeleteTransactions.mutate({ ids }); // call bulk delete fn and pass the array of ids
               }}
               disabled={isDisabled}
-              categories={categories}
-              onCategoryChange={onCategoryChange}
-              selectedCategory={selectedCategory}
             />
           </CardContent>
         )}
