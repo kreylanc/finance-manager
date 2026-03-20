@@ -7,7 +7,7 @@ import { useBulkDeleteCategories } from "@/features/categories/api/use-bulk-dele
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { DataTable } from "@/components/data-table";
+import { DataTable } from "@/components/data-table/data-table";
 
 import { columns } from "./columns";
 import { Skeleton } from "@/components/ui/skeleton";

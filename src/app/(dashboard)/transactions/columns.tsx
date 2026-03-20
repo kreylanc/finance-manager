@@ -101,6 +101,9 @@ export const columns: ColumnDef<ResponseType>[] = [
         />
       );
     },
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id));
+    },
   },
   {
     accessorKey: "amount",
@@ -185,5 +188,6 @@ export const columns: ColumnDef<ResponseType>[] = [
   {
     id: "actions",
     cell: ({ row }) => <Actions id={row.original.id} />,
+    enableHiding: false,
   },
 ];
