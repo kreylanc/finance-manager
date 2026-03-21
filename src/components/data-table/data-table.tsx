@@ -13,6 +13,7 @@ import {
   Row,
   SortingState,
   useReactTable,
+  VisibilityState,
 } from "@tanstack/react-table";
 
 import {
@@ -48,6 +49,7 @@ interface DataTableProps<TData, TValue> {
   filterKey: string;
   onDelete: (rows: Row<TData>[]) => void;
   disabled?: boolean;
+  visibleColumns?: VisibilityState;
 }
 
 export function DataTable<TData, TValue>({
@@ -56,13 +58,15 @@ export function DataTable<TData, TValue>({
   filterKey,
   onDelete,
   disabled,
+  visibleColumns,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
 
-  const [columnVisibility, setColumnVisibility] = React.useState({});
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>(visibleColumns || {});
   const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({

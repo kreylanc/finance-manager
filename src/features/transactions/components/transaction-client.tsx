@@ -142,6 +142,11 @@ export const TransactionClient = () => {
                 bulkDeleteTransactions.mutate({ ids }); // call bulk delete fn and pass the array of ids
               }}
               disabled={isDisabled}
+              visibleColumns={{
+                account: false,
+                notes: false,
+                date: false,
+              }}
             />
           </CardContent>
         )}
