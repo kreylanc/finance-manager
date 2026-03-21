@@ -1,13 +1,11 @@
 import {
   type ChartConfig,
   ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
 } from "../ui/chart";
-import { Cell, PolarAngleAxis, PolarGrid, Radar, RadarChart } from "recharts";
-import { cn, formatCurrency, formatPercentage } from "@/lib/utils";
+import { PolarAngleAxis, PolarGrid, Radar, RadarChart } from "recharts";
+import { formatCurrency } from "@/lib/utils";
 import { useEffect, useState } from "react";
 
 const COLORS = ["#2563eb", "#12C6FF", "#FF647f", "#FF9354"];
@@ -49,7 +47,7 @@ export const RadarVariant = ({ data }: Props) => {
   }));
 
   return (
-    <ChartContainer config={chartConfig} className="min-h-[150px] w-full">
+    <ChartContainer config={chartConfig} className="min-h-[300px] w-full">
       <RadarChart data={chartData} cx="50%" cy="50%">
         <ChartTooltip
           cursor={false}

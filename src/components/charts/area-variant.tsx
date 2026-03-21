@@ -28,7 +28,10 @@ type Props = {
 };
 export const AreaVariant = ({ data }: Props) => {
   return (
-    <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
+    <ChartContainer
+      config={chartConfig}
+      className="min-h-[200px] lg:min-h-[300px] w-full"
+    >
       <AreaChart data={data}>
         <CartesianGrid strokeDasharray="3 3" />
         <defs>

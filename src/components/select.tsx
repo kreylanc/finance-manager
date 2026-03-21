@@ -46,6 +46,20 @@ const Select = ({
             cursor: "pointer",
           },
         }),
+        option: (base, state) => ({
+          ...base,
+          backgroundColor: state.isSelected
+            ? "hsl(var(--primary))"
+            : state.isFocused
+              ? "hsl(var(--muted))"
+              : "hsl(var(--background))",
+          "&:hover": {
+            backgroundColor: !state.isSelected ? "hsl(var(--muted))" : "",
+          },
+          "&:active": {
+            backgroundColor: "hsl(var(--muted))",
+          },
+        }),
       }}
       value={formattedValue}
       onChange={onSelect}

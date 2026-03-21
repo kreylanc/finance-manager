@@ -30,7 +30,10 @@ type Props = {
 };
 export const BarVariant = ({ data }: Props) => {
   return (
-    <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
+    <ChartContainer
+      config={chartConfig}
+      className="min-h-[200px] lg:min-h-[300px] w-full"
+    >
       <BarChart data={data}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis
