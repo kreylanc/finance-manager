@@ -8,7 +8,7 @@ import {
   type ChartConfig,
 } from "../ui/chart";
 import { Line, LineChart, CartesianGrid, XAxis } from "recharts";
-import { cn, formatCurrency } from "@/lib/utils";
+import { cn, formatCurrency, labelDateFormatter } from "@/lib/utils";
 
 const chartConfig = {
   income: {
@@ -27,12 +27,13 @@ type Props = {
     income: number;
     expense: number;
   }[];
+  isNepaliCalendar: boolean;
 };
-export const LineVariant = ({ data }: Props) => {
+export const LineVariant = ({ data, isNepaliCalendar }: Props) => {
   return (
     <ChartContainer
       config={chartConfig}
-      className="min-h-[200px] lg:min-h-[300px] w-full"
+      className="min-h-[200px] md:max-h-[300px] w-full"
     >
       <LineChart data={data}>
         <CartesianGrid strokeDasharray="3 3" />
@@ -40,7 +41,7 @@ export const LineVariant = ({ data }: Props) => {
           tickLine={false}
           axisLine={false}
           dataKey="date"
-          tickFormatter={(value) => format(value, "dd MMM")}
+          tickFormatter={(value) => labelDateFormatter(value, isNepaliCalendar)}
           style={{
             fontSize: "12px",
           }}
@@ -52,7 +53,9 @@ export const LineVariant = ({ data }: Props) => {
             <ChartTooltipContent
               key="bar"
               indicator="dot"
-              labelFormatter={(value) => format(value, "dd MMM")}
+              labelFormatter={(value) =>
+                labelDateFormatter(value, isNepaliCalendar)
+              }
               formatter={(value, name, indicator) => (
                 <div className="flex w-full flex-wrap items-stretch gap-2 [&>svg]:h-2.5 [&>svg]:w-2.5 [&>svg]:text-muted-foreground">
                   {!indicator.hide && (

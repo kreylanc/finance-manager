@@ -3,7 +3,6 @@ import {
   BarChart3Icon,
   FileSearch,
   LineChartIcon,
-  Loader2,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { AreaVariant } from "./area-variant";
@@ -17,6 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { useNepaliCalendar } from "@/features/useNepaliCalendar";
 
 type Props = {
   data?: {
@@ -27,6 +27,7 @@ type Props = {
 };
 export const Chart = ({ data = [] }: Props) => {
   const [chartType, setChartType] = useState("area");
+  const { isNepaliCalendar } = useNepaliCalendar();
 
   const onChartChange = (type: string) => {
     setChartType(type);
@@ -72,9 +73,15 @@ export const Chart = ({ data = [] }: Props) => {
           </div>
         ) : (
           <>
-            {chartType === "area" && <AreaVariant data={data} />}
-            {chartType === "bar" && <BarVariant data={data} />}
-            {chartType === "line" && <LineVariant data={data} />}
+            {chartType === "area" && (
+              <AreaVariant data={data} isNepaliCalendar={isNepaliCalendar} />
+            )}
+            {chartType === "bar" && (
+              <BarVariant data={data} isNepaliCalendar={isNepaliCalendar} />
+            )}
+            {chartType === "line" && (
+              <LineVariant data={data} isNepaliCalendar={isNepaliCalendar} />
+            )}
           </>
         )}
       </CardContent>
