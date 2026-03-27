@@ -114,7 +114,7 @@ export const EditTransactionSheet = () => {
         amount: "",
         date: new Date(),
         dateBS: "",
-        notes: "",
+        notes: null,
       };
 
   return (

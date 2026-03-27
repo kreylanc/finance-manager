@@ -26,8 +26,8 @@ import NepaliDatePicker from "@/components/nepali-date-picker";
 const formSchema = z.object({
   date: z.coerce.date<Date>(),
   name: z.string().min(3, "Transaction name must be at least 3 characters."),
-  amount: z.string(),
-  accountId: z.string(),
+  amount: z.string().min(1, "Enter an amount"),
+  accountId: z.string().nonempty("Please select an account"),
   dateBS: z.string(),
   categoryId: z.string().nullable().optional(),
   notes: z.string().nullable().optional(),
@@ -81,6 +81,7 @@ export const TransactionForm = ({
     onSubmit({
       ...values,
       amount: amountInMilliunits,
+      categoryId: values.categoryId === "" ? null : values.categoryId,
     });
   };
   // function to handle delete transaction
@@ -101,7 +102,12 @@ export const TransactionForm = ({
                 <DatePicker
                   value={field.value}
                   onChange={(date) => {
-                    field.onChange(date);
+                    // convert the date to utc normalized so in the database it will be stored as 00:00:00 as timezone and not push the date back by a day
+                    const utcNormalized = date
+                      ? new Date(format(date, "yyyy-MM-dd") + "T00:00:00.000Z")
+                      : date;
+                    field.onChange(utcNormalized);
+
                     // Convert and update BS date immediately
                     if (date) {
                       const dateAD = format(date, "yyyy-MM-dd");
@@ -127,12 +133,6 @@ export const TransactionForm = ({
                   value={field.value}
                   disabled={disabled}
                   onChange={(date) => {
-                    // if (date instanceof NepaliDate) {
-                    //   field.onChange(date.format("YYYY-MM-DD")); // format it in english (2082-11-12)
-                    //   form.setValue("date", date.timestamp);
-                    // } else {
-                    //   field.onChange(date);
-                    // }
                     field.onChange(date.format("YYYY-MM-DD")); // format it in english (2082-11-12)
                     form.setValue("date", date.timestamp);
                   }}
@@ -150,7 +150,7 @@ export const TransactionForm = ({
               <FormControl>
                 <Input
                   disabled={disabled}
-                  placeholder="Name of the transaction or location"
+                  placeholder="Name of the transaction"
                   {...field}
                   aria-invalid={fieldState.invalid}
                 />
@@ -162,7 +162,7 @@ export const TransactionForm = ({
         <FormField
           name="accountId"
           control={form.control}
-          render={({ field }) => (
+          render={({ field, fieldState }) => (
             <FormItem>
               <FormLabel>Account</FormLabel>
               <FormControl>
@@ -173,8 +173,10 @@ export const TransactionForm = ({
                   value={field.value}
                   onChange={field.onChange}
                   disabled={disabled}
+                  aria-state={fieldState.invalid}
                 />
               </FormControl>
+              {fieldState.invalid && <FormMessage />}
             </FormItem>
           )}
         />
@@ -189,8 +191,10 @@ export const TransactionForm = ({
                   placeholder="Select a category"
                   options={categoryOptions}
                   onCreate={onCreateCategory}
-                  value={field.value}
-                  onChange={field.onChange}
+                  value={field.value || null}
+                  onChange={(value) => {
+                    field.onChange(value || "");
+                  }}
                   disabled={disabled}
                   clearable={true}
                 />
@@ -201,12 +205,20 @@ export const TransactionForm = ({
         <FormField
           name="amount"
           control={form.control}
-          render={({ field }) => (
+          render={({ field, fieldState }) => (
             <FormItem>
               <FormLabel>Amount</FormLabel>
               <FormControl>
-                <AmountInput {...field} placeholder="0.00" />
+                <AmountInput
+                  {...field}
+                  onChange={(value) => {
+                    field.onChange(value || "");
+                  }}
+                  placeholder="0.00"
+                  aria-state={fieldState.invalid}
+                />
               </FormControl>
+              {fieldState.invalid && <FormMessage />}
             </FormItem>
           )}
         />

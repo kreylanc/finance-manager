@@ -6,6 +6,7 @@ import { convertAmountToMilliunits } from "@/lib/utils";
 import { ADtoBS, BStoAD } from "nepali-date-library";
 import { format, parse } from "date-fns";
 import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 
 const dateFormat = "yyyy-MM-dd HH:mm:ss";
 const outputFormat = "yyyy-MM-dd";
@@ -20,9 +21,10 @@ type Props = {
   data: string[][];
   onCancel: () => void;
   onSubmit: (data: any) => void;
+  isDisabled: boolean;
 };
 
-export const ImportCard = ({ data, onCancel, onSubmit }: Props) => {
+export const ImportCard = ({ data, onCancel, onSubmit, isDisabled }: Props) => {
   const [selectedColumns, setSelectedColumns] = useState<SelectedColumnState>(
     {},
   );
@@ -140,15 +142,21 @@ export const ImportCard = ({ data, onCancel, onSubmit }: Props) => {
           </CardTitle>
 
           <div className="flex flex-col md:flex-row items-center gap-2">
-            <Button onClick={onCancel} size="sm" className="w-full">
+            <Button
+              onClick={onCancel}
+              disabled={isDisabled}
+              size="sm"
+              className="w-full"
+            >
               Cancel
             </Button>
             <Button
               className="w-full"
               size="sm"
-              disabled={progress < requiredOptions.length}
+              disabled={progress < requiredOptions.length || isDisabled}
               onClick={handleContinue}
             >
+              {isDisabled && <Loader2 className="animate-spin" />}
               Continue {progress}/{requiredOptions.length}
             </Button>
           </div>
