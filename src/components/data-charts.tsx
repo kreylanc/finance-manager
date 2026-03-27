@@ -2,7 +2,7 @@
 
 import { useGetSummary } from "@/features/summary/api/use-get-summary";
 import { Chart } from "./charts/chart";
-import { SpendingPie, SpendingPieLoading } from "./charts/spending-pie";
+import { PieCharts, PieChartsLoading } from "./charts/pie-charts";
 import {
   RecentTransactions,
   RecentTransactionsLoading,
@@ -15,13 +15,13 @@ export const DataCharts = () => {
     return (
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-6">
         <div className="col-span-1 lg:col-span-3">
-          <SpendingPieLoading />
+          <PieChartsLoading />
         </div>
         <div className="cols-span-1 lg:col-span-3">
-          <SpendingPieLoading />
+          <PieChartsLoading />
         </div>
         <div className="cols-span-1 lg:col-span-3">
-          <SpendingPieLoading />
+          <PieChartsLoading />
         </div>
         <div className="cols-span-1 lg:col-span-3">
           <RecentTransactionsLoading />
@@ -30,17 +30,17 @@ export const DataCharts = () => {
     );
   }
   return (
-    <div className="grid grid-cols-1 gap-8 lg:grid-cols-6">
-      <div className="col-span-1 lg:col-span-3">
+    <div className="grid grid-cols-1 gap-8 md:grid-cols-6">
+      <div className="col-span-1 md:col-span-6">
         <Chart data={data?.days} />
       </div>
-      <div className="cols-span-1 lg:col-span-3">
-        <SpendingPie data={data?.expenseCategory} title="Expense by category" />
+      <div className="cols-span-1 md:col-span-3">
+        <PieCharts data={data?.expenseCategory} title="Expense by category" />
       </div>
-      <div className="cols-span-1 lg:col-span-3">
-        <SpendingPie data={data?.incomeCategory} title="Income by category" />
+      <div className="cols-span-1 md:col-span-3">
+        <PieCharts data={data?.incomeCategory} title="Income by category" />
       </div>
-      <div className="cols-span-1 lg:col-span-3">
+      <div className="cols-span-1 md:col-span-6">
         <RecentTransactions data={data?.recentTransactions} />
       </div>
     </div>

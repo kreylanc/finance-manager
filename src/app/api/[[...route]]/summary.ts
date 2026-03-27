@@ -1,12 +1,6 @@
 import { getAuth } from "@hono/clerk-auth";
 import { zValidator } from "@hono/zod-validator";
-import {
-  addDays,
-  differenceInDays,
-  parse,
-  startOfDay,
-  subDays,
-} from "date-fns";
+import { differenceInDays, parseISO, subDays } from "date-fns";
 import { Hono } from "hono";
 import z from "zod";
 import { db } from "/db/drizzle";
@@ -31,26 +25,26 @@ const app = new Hono().get(
     if (!auth?.userId) {
       return c.json({ error: "Unauthorized" }, 401);
     }
-    const defaultTo = new Date();
-    const defaultFrom = subDays(defaultTo, 30);
+    const defaultTo = new Date(
+      new Date().toISOString().split("T")[0] + "T18:14:00Z",
+    );
+    const defaultFrom = new Date(
+      new Date(defaultTo.getTime() - 30 * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split("T")[0] + "T00:00:00Z",
+    );
 
-    const startDate = from
-      ? startOfDay(parse(from, "yyyy-MM-dd", new Date()))
-      : startOfDay(defaultFrom);
-    const endDate = to
-      ? startOfDay(parse(to, "yyyy-MM-dd", new Date()))
-      : startOfDay(defaultTo);
+    const startDate = from ? parseISO(from + "T00:00:00Z") : defaultFrom;
+    const endDate = to ? parseISO(to + "T18:14:00Z") : defaultTo;
 
-    const endDateExclusive = addDays(endDate, 1);
     const periodLength = differenceInDays(endDate, startDate) + 1;
     const lastPeriodStart = subDays(startDate, periodLength);
     const lastPeriodEnd = subDays(endDate, periodLength);
-    const lastPeriodEndExclusive = addDays(lastPeriodEnd, 1);
 
     async function fetchFinancialData(
       userId: string,
       startDate: Date,
-      endDateExclusive: Date,
+      endDate: Date,
     ) {
       return await db
         .select({
@@ -71,7 +65,7 @@ const app = new Hono().get(
             accountId ? eq(transactions.accountId, accountId) : undefined,
             eq(accounts.userId, userId),
             gte(transactions.date, startDate),
-            lt(transactions.date, endDateExclusive),
+            lt(transactions.date, endDate),
           ),
         );
     }
@@ -79,13 +73,13 @@ const app = new Hono().get(
     const [currentPeriod] = await fetchFinancialData(
       auth.userId,
       startDate,
-      endDateExclusive,
+      endDate,
     );
 
     const [lastPeriod] = await fetchFinancialData(
       auth.userId,
       lastPeriodStart,
-      lastPeriodEndExclusive,
+      lastPeriodEnd,
     );
 
     const incomeChange = calculatePercentageChange(
@@ -115,7 +109,7 @@ const app = new Hono().get(
           eq(accounts.userId, auth.userId),
           lt(transactions.amount, 0),
           gte(transactions.date, startDate),
-          lt(transactions.date, endDateExclusive),
+          lt(transactions.date, endDate),
         ),
       )
       .groupBy(categories.name)
@@ -152,7 +146,7 @@ const app = new Hono().get(
           eq(accounts.userId, auth.userId),
           gt(transactions.amount, 0),
           gte(transactions.date, startDate),
-          lt(transactions.date, endDateExclusive),
+          lt(transactions.date, endDate),
         ),
       )
       .groupBy(categories.name)
@@ -177,7 +171,7 @@ const app = new Hono().get(
 
     const activeDays = await db
       .select({
-        date: transactions.date,
+        date: sql<Date>`DATE(${transactions.date})`.as("Date"),
         income:
           sql`SUM(CASE WHEN ${transactions.amount} >= 0 THEN ${transactions.amount} ELSE 0 END)`.mapWith(
             Number,
@@ -194,11 +188,11 @@ const app = new Hono().get(
           accountId ? eq(transactions.accountId, accountId) : undefined,
           eq(accounts.userId, auth.userId),
           gte(transactions.date, startDate),
-          lt(transactions.date, endDateExclusive),
+          lt(transactions.date, endDate),
         ),
       )
-      .groupBy(transactions.date)
-      .orderBy(transactions.date);
+      .groupBy(sql`DATE(${transactions.date})`)
+      .orderBy(sql`DATE(${transactions.date})`);
 
     const filledDays = fillMissingDays(activeDays, startDate, endDate);
 
@@ -214,13 +208,13 @@ const app = new Hono().get(
       })
       .from(transactions)
       .innerJoin(accounts, eq(transactions.accountId, accounts.id))
-      .innerJoin(categories, eq(transactions.categoryId, categories.id))
+      .leftJoin(categories, eq(transactions.categoryId, categories.id))
       .where(
         and(
           accountId ? eq(transactions.accountId, accountId) : undefined,
           eq(accounts.userId, auth.userId),
           gte(transactions.date, startDate),
-          lt(transactions.date, endDateExclusive),
+          lt(transactions.date, endDate),
         ),
       )
       .orderBy(desc(transactions.date))

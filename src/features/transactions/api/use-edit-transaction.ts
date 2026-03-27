@@ -18,7 +18,12 @@ export const useEditTransaction = (id?: string) => {
         param: { id },
         json,
       });
-      return await response.json();
+      const result = await response.json();
+      if ("error" in result) {
+        throw new Error(result.error);
+      }
+
+      return result;
     },
     onSuccess: () => {
       // refetches the transaction data when new transaction is edited
@@ -28,7 +33,7 @@ export const useEditTransaction = (id?: string) => {
       toast.success("Transaction edited.");
     },
     onError: (err) => {
-      toast.error("Failed to edit transaction.");
+      toast.error(err.message || "Failed to edit transaction.");
     },
   });
 

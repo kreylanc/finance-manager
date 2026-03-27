@@ -48,7 +48,7 @@ export const PieVariant = ({ data }: Props) => {
   }));
 
   return (
-    <ChartContainer config={chartConfig} className="min-h-[150px] w-full">
+    <ChartContainer config={chartConfig} className="min-h-[300px] w-full">
       <PieChart data={chartData}>
         <ChartTooltip
           cursor={false}

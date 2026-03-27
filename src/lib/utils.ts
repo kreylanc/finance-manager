@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { eachDayOfInterval, format, isSameDay, subDays } from "date-fns";
+import NepaliDate, { ADtoBS } from "nepali-date-library";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -100,4 +101,20 @@ export function formatDateRange(period?: Period) {
 
   // return only the "from" date
   return format(period.from, "LLL dd, y");
+}
+
+export function formatNepaliDateRange(period: {
+  from?: NepaliDate;
+  to?: NepaliDate;
+}) {
+  return `${period.from?.format("MMM D")} - ${period.to?.format("MMM D, YYYY")}`;
+}
+
+export function labelDateFormatter(date: string, isNepaliCalendar: boolean) {
+  if (isNepaliCalendar) {
+    const convertedDate = ADtoBS(format(date, "yyyy-MM-dd"));
+    return new NepaliDate(convertedDate).format("DD MMM");
+  } else {
+    return format(date, "dd MMM");
+  }
 }

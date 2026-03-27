@@ -2,12 +2,11 @@ import {
   type ChartConfig,
   ChartContainer,
   ChartLegend,
-  ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
 } from "../ui/chart";
-import { Cell, RadialBar, RadialBarChart } from "recharts";
-import { cn, formatCurrency, formatPercentage } from "@/lib/utils";
+import { RadialBar, RadialBarChart } from "recharts";
+import { cn, formatCurrency } from "@/lib/utils";
 import { useEffect, useState } from "react";
 
 const COLORS = ["#2563eb", "#12C6FF", "#FF647f", "#FF9354"];
@@ -50,13 +49,13 @@ export const RadialVariant = ({ data }: Props) => {
   }));
 
   return (
-    <ChartContainer config={chartConfig} className="min-h-[150px] w-full">
+    <ChartContainer config={chartConfig} className="min-h-[300px] w-full">
       <RadialBarChart
         data={chartData}
         barCategoryGap="10%"
         barGap={4}
         cx="50%"
-        cy="30%"
+        cy="35%"
         innerRadius="50%"
         outerRadius="80%"
       >

@@ -1,3 +1,4 @@
+import { Badge } from "@/components/ui/badge";
 import { useOpenCategory } from "@/features/categories/hooks/use-open-category";
 import { useOpenTransaction } from "@/features/transactions/hooks/use-open-transaction";
 import { cn } from "@/lib/utils";
@@ -21,15 +22,18 @@ export const CategoryColumns = ({ id, category, categoryId }: Props) => {
     }
   };
   return (
-    <div
+    <Badge
+      variant="outline"
       className={cn(
-        "flex items-center cursor-pointer hover:underline",
+        "p-2 px-4 cursor-pointer text-sm hover:underline",
         !category && "text-destructive",
       )}
       onClick={onClick}
     >
-      {!category && <TriangleAlert className="mr-1 size-4" />}
-      {category || "Uncategorized"}
-    </div>
+      <span className="flex items-center mx-auto">
+        {!category && <TriangleAlert className="mr-1 size-4" />}
+        {category || "Uncategorized"}
+      </span>
+    </Badge>
   );
 };

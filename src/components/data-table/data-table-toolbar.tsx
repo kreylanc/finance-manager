@@ -15,6 +15,7 @@ import { DataTableFacetedFilter } from "./data-table-faceted-filter";
 import { Button } from "../ui/button";
 import { useGetCategories } from "@/features/categories/api/use-get-categories";
 import { useConfirm } from "/hooks/use-confirm";
+import { ExportDropdown } from "../export-dropdown";
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
@@ -99,6 +100,7 @@ export function DataTableToolbar<TData>({
                 })}
             </DropdownMenuContent>
           </DropdownMenu>
+          <ExportDropdown table={table} />
           {/* Delete button shown only when rows are selected */}
           {table.getFilteredSelectedRowModel().rows.length > 0 && (
             <Button

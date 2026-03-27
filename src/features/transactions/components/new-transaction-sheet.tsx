@@ -17,6 +17,8 @@ import {
   SheetHeader,
 } from "@/components/ui/sheet";
 import { Loader2 } from "lucide-react";
+import { ADtoBS } from "nepali-date-library";
+import { format } from "date-fns";
 
 const formSchema = insertTransactionsSchema.omit({ id: true });
 
@@ -61,6 +63,16 @@ export const NewTransactionSheet = () => {
     });
   };
 
+  const defaultValues = {
+    name: "",
+    categoryId: null,
+    accountId: accountQuery.data ? accountQuery.data[0].id : "",
+    amount: "",
+    date: new Date(),
+    dateBS: ADtoBS(format(new Date(), "yyyy-MM-dd")),
+    notes: null,
+  };
+
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
       <SheetContent className="space-y-4">
@@ -80,6 +92,7 @@ export const NewTransactionSheet = () => {
             onCreateCategory={onCreateCategory}
             accountOptions={accountOptions}
             onCreateAccount={onCreateAccount}
+            defaultValues={defaultValues}
           />
         )}
       </SheetContent>

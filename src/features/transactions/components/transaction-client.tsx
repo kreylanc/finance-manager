@@ -45,7 +45,9 @@ export const TransactionClient = () => {
 
   // disabled delete btn if transaction query or delete is on going
   const isDisabled =
-    transactionQuery.isLoading || bulkDeleteTransactions.isPending;
+    transactionQuery.isLoading ||
+    bulkDeleteTransactions.isPending ||
+    bulkCreateTransactions.isPending;
 
   // handle csv file upload
   const onUpload = (result: typeof INITIAL_IMPORT_RESULTS) => {
@@ -70,10 +72,6 @@ export const TransactionClient = () => {
 
     const categoryId = await confirmCategory();
 
-    if (!categoryId) {
-      return toast.error("Please select an account to continue.");
-    }
-
     const data = values.map((item) => ({
       ...item,
       accountId: accountId as string,
@@ -96,6 +94,7 @@ export const TransactionClient = () => {
           data={importResults.data}
           onCancel={onCancelImport}
           onSubmit={onSubmitImport}
+          isDisabled={isDisabled}
         />
       </>
     );
@@ -142,6 +141,11 @@ export const TransactionClient = () => {
                 bulkDeleteTransactions.mutate({ ids }); // call bulk delete fn and pass the array of ids
               }}
               disabled={isDisabled}
+              visibleColumns={{
+                account: false,
+                notes: false,
+                date: false,
+              }}
             />
           </CardContent>
         )}
