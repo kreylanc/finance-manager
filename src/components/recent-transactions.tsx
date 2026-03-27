@@ -10,7 +10,7 @@ type Props = {
     name: string;
     date: string;
     dateBS: string;
-    categories: string;
+    categories: string | null;
     account: string;
   }[];
 };

@@ -9,9 +9,8 @@ import { InferResponseType } from "hono";
 import { client } from "@/lib/hono";
 import { Actions } from "./actions";
 import { format } from "date-fns";
-import { formatCurrency } from "@/lib/utils";
+import { cn, formatCurrency } from "@/lib/utils";
 import NepaliDate from "nepali-date-library";
-import { Badge } from "@/components/ui/badge";
 import { AccountColumns } from "./account-columns";
 import { CategoryColumns } from "./category-columns";
 
@@ -122,12 +121,14 @@ export const columns: ColumnDef<ResponseType>[] = [
     cell: ({ row }) => {
       const amount = parseFloat(row.getValue("amount"));
       return (
-        <Badge
-          variant={amount < 0 ? "destructive" : "primary"}
-          className="px-3.5 w-36 py-2.5 text-xs font-medium"
+        <span
+          className={cn(
+            "mx-auto",
+            amount < 0 ? "text-destructive" : "text-emerald-700",
+          )}
         >
-          <span className="mx-auto">{formatCurrency(amount)}</span>
-        </Badge>
+          {formatCurrency(amount)}
+        </span>
       );
     },
   },
