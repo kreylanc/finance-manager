@@ -26,7 +26,7 @@ type Props = {
   }[];
   title: string;
 };
-export const SpendingPie = ({ data = [], title }: Props) => {
+export const PieCharts = ({ data = [], title }: Props) => {
   const [chartType, setChartType] = useState("pie");
 
   const onChartChange = (type: string) => {
@@ -83,7 +83,7 @@ export const SpendingPie = ({ data = [], title }: Props) => {
   );
 };
 
-export const SpendingPieLoading = () => {
+export const PieChartsLoading = () => {
   return (
     <Card className="border-none drop-shadow-sm">
       <CardHeader className="flex space-y-2 lg:items-center justify-between lg:flex-row">
